@@ -193,7 +193,7 @@ Object.md5 = (data: any) => {
   if (!data) {
     return '';
   }
-  return data.md5();
+  return md5(data.toString());
 };
 Object.toSerialize = (data) => {
   return JSON.parse(JSON.stringify(data));
