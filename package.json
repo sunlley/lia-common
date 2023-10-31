@@ -1,6 +1,6 @@
 {
   "name": "lia-common",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "JavaScript library of Easy-to-use extension function",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -2,9 +2,9 @@ import { v1 } from 'uuid';
 import md5 = require('md5');
 
 declare global {
-  interface Object {
-    md5(): string;
-  }
+  // interface Object {
+    // md5(): string;
+  // }
   interface Date {
     format(format: string): string;
   }
@@ -26,9 +26,9 @@ declare global {
     coverBN(): string;
     toJson(defaultValue: any): any;
   }
-  interface Number {
-    toFloor(fixed?: number): number;
-  }
+  // interface Number {
+    // toFloor(fixed?: number): number;
+  // }
   interface StringConstructor {
     isEmpty(str: string): boolean;
     isNotEmpty(str: string): boolean;
@@ -63,7 +63,7 @@ declare global {
     format(date: any, format: string): string;
   }
   interface NumberConstructor {
-    toFloor(num: number, fixed: number): number;
+    toFloor(num: number, fixed?: number): number;
     randomInt(max: number,min?: number, ): number;
   }
 }
@@ -186,9 +186,9 @@ class StringDate {
   }
 }
 
-Object.prototype.md5 = function (): string {
-  return md5(this.toString());
-};
+// Object.prototype.md5 = function (): string {
+//   return md5(this.toString());
+// };
 Object.md5 = (data: any) => {
   if (!data) {
     return '';
@@ -487,11 +487,11 @@ Date.format = (ts, format) => {
   // @ts-ignore
   return new Date(ts).format(format);
 };
-// @ts-ignore
-Number.prototype.toFloor = function (fixed: number=0) {
-  let str: string = `${this}`;
+
+Number.toFloor = (num, fixed = 0) => {
+  let str: string = `${num}`;
   if (!str.contains('.')) {
-    return this;
+    return num;
   }
   let strArr = str.split('.');
   let start = strArr[0];
@@ -503,9 +503,6 @@ Number.prototype.toFloor = function (fixed: number=0) {
     return parseInt(`${start}.${end}`, 0);
   }
   return parseFloat(`${start}.${end}`);
-};
-Number.toFloor = (num, fixed = 0) => {
-  return num.toFloor(fixed);
 };
 Number.randomInt = (max, min=0) => {
   if (min==null){min=0;}
