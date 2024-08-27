@@ -1,17 +1,38 @@
 {
   "compilerOptions": {
+    "experimentalDecorators": true,
+    "module": "CommonJS",
     "target": "es2020",
-    "module": "commonjs",
-    "declaration": true,
-    "outDir": "./dist",
     "strict": true,
+    "jsx": "preserve",
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "outDir": "./dist",
+    "rootDir": "src",
+    "types": [
+      "node"
+    ],
+    "resolveJsonModule": true,
+    "declaration": true,
     "lib": [
-      "es5",
       "esnext",
+      "es5",
       "ES2016",
-      "dom"
+      "ES2020"
     ]
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "**/__tests__/*"]
+  "include": [
+
+    "src",
+    "src/**/*",
+    "global.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
