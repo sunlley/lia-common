@@ -50,7 +50,7 @@ export const delay = (time: number = 1000) => {
 };
 export const isVaN = (value: any) => {
   return value == null || value === '';
-}
+};
 export const convert = {
   toJson(payload: string): object {
     return JSON.parse(payload);
@@ -58,37 +58,73 @@ export const convert = {
   toString(payload: object): string {
     return JSON.stringify(payload);
   },
-  toQueryString(payload: object): string {
-    let result: string[] = [];
-    if (payload) {
-      for (const key in payload) {
-        if (payload.hasOwnProperty(key) && (payload as any)[key] != undefined) {
-          let value = (payload as any)[key];
-          let type = typeof value;
-          if (type === 'string' || type === 'number' || type === 'boolean') {
-            result.push(`${key}=${value}`);
-          } else {
-            result.push(`${key}=${JSON.stringify(value)}`);
-          }
-        }
-      }
+  toQueryString(payload: {[key:string]:any},prefix?:string): string {
+    prefix = prefix || '';
+    let pairs = [];
+
+    for (let key in payload) {
+      if (key === null){continue;}
+      let value = payload[key];
+      if (value==undefined){continue;}
+      let key_ = this.encodeURI(key);
+      if (key_ == null){continue;}
+      value = this.encodeURI(value);
+      pairs.push(key_ +'='+ value);
     }
-    return result.join('&');
+
+    return pairs.length ? prefix + pairs.join('&') : '';
   },
-  fromQueryString(payload: string): object {
-    let result: any = {};
-    payload = payload.trim();
-    if (payload.startsWith('?')) {
-      payload = payload.substring(1);
+  fromQueryString(payload: string): {[key:string]:any} {
+    let parser = /([^=?#&]+)=?([^&]*)/g
+      , result:any = {}
+      , part;
+
+    while (part = parser.exec(payload)) {
+      let key = this.decodeURI(part[1])
+        , value = this.decodeURI(part[2]);
+
+      //
+      // Prevent overriding of existing properties. This ensures that build-in
+      // methods like `toString` or __proto__ are not overriden by malicious
+      // querystrings.
+      //
+      // In the case if failed decoding, we want to omit the key/value pairs
+      // from the result.
+      //
+      if (key === null || value === null || key in result) continue;
+      result[key] = value;
     }
-    payload.split('&').forEach((it) => {
-      try {
-        let [key, value] = it.split('=');
-        if (value != undefined) {
-          result[key] = value;
-        }
-      } catch (e) {}
-    });
+
     return result;
+  },
+
+  /**
+   * Decode a URI encoded string.
+   *
+   * @param {String} input The URI encoded string.
+   * @returns {String|Null} The decoded string.
+   * @api private
+   */
+  decodeURI(input: string): string | null {
+    try {
+      return decodeURIComponent(input.replace(/\+/g, ' '));
+    } catch (e) {
+      return null;
+    }
+  },
+
+  /**
+   * Attempts to encode a given input.
+   *
+   * @param {String} input The string that needs to be encoded.
+   * @returns {String|Null} The encoded string.
+   * @api private
+   */
+  encodeURI(input: string): string | null {
+    try {
+      return encodeURIComponent(input);
+    } catch (e) {
+      return null;
+    }
   },
 };
