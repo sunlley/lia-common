@@ -75,10 +75,14 @@ export const convert = {
     return pairs.length ? prefix + pairs.join('&') : '';
   },
   fromQueryString(payload: string): {[key:string]:any} {
-    let parser = /([^=?#&]+)=?([^&]*)/g
-      , result:any = {}
-      , part;
+    if (payload.indexOf('?')>=0){
+      payload=payload.substring(payload.indexOf('?'))
+    }
+    let parser = /([^=?#&]+)=?([^&]*)/g;
+    let result:any = {}
+    let part:any;
 
+    // eslint-disable-next-line no-cond-assign
     while (part = parser.exec(payload)) {
       let key = this.decodeURI(part[1])
         , value = this.decodeURI(part[2]);
@@ -91,7 +95,7 @@ export const convert = {
       // In the case if failed decoding, we want to omit the key/value pairs
       // from the result.
       //
-      if (key === null || value === null || key in result) continue;
+      if (key === null || value === null || key in result) {continue;}
       result[key] = value;
     }
 
