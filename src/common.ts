@@ -1,3 +1,5 @@
+import cryptojs from 'crypto-js';
+
 /**
  * Generate random values
  *
@@ -40,6 +42,32 @@ export const random = {
   number: (min: number, max: number): number => {
     return Math.floor(Math.random() * (max - min)) + min;
   },
+  hash: (option?: {
+    engine?: 'pbkdf2' | 'sha1' | 'sha3' | 'sha256';
+    enc?: 'base64' | 'hash';
+    length?: 128 | 256 | 512;
+  }): string => {
+    let { enc, engine, length } = option ?? {};
+    engine = engine ?? 'pbkdf2';
+    length = length ?? 128;
+    enc = enc ?? 'base64';
+    let salt = cryptojs.lib.WordArray.random(length / 8);
+
+    switch (engine) {
+      case 'pbkdf2':
+        return cryptojs.PBKDF2(salt, salt, {
+          keySize: length / 32,
+        }).toString(enc == 'base64' ? cryptojs.enc.Base64 : cryptojs.enc.Hex);
+      case 'sha1':
+        return cryptojs.SHA1(salt).toString(enc == 'base64' ? cryptojs.enc.Base64 : cryptojs.enc.Hex);
+      case 'sha3':
+        return cryptojs.SHA3(salt).toString(enc == 'base64' ? cryptojs.enc.Base64 : cryptojs.enc.Hex);
+      case 'sha256':
+        return cryptojs.SHA256(salt).toString(enc == 'base64' ? cryptojs.enc.Base64 : cryptojs.enc.Hex);
+    }
+
+    return '';
+  },
 };
 export const delay = (time: number = 1000) => {
   return new Promise((resolve) => {
@@ -58,34 +86,40 @@ export const convert = {
   toString(payload: object): string {
     return JSON.stringify(payload);
   },
-  toQueryString(payload: {[key:string]:any},prefix?:string): string {
+  toQueryString(payload: { [key: string]: any }, prefix?: string): string {
     prefix = prefix || '';
     let pairs = [];
 
     for (let key in payload) {
-      if (key === null){continue;}
+      if (key === null) {
+        continue;
+      }
       let value = payload[key];
-      if (value==undefined){continue;}
+      if (value == undefined) {
+        continue;
+      }
       let key_ = this.encodeURI(key);
-      if (key_ == null){continue;}
+      if (key_ == null) {
+        continue;
+      }
       value = this.encodeURI(value);
-      pairs.push(key_ +'='+ value);
+      pairs.push(key_ + '=' + value);
     }
 
     return pairs.length ? prefix + pairs.join('&') : '';
   },
-  fromQueryString(payload: string): {[key:string]:any} {
-    if (payload.indexOf('?')>=0){
-      payload=payload.substring(payload.indexOf('?'))
+  fromQueryString(payload: string): { [key: string]: any } {
+    if (payload.indexOf('?') >= 0) {
+      payload = payload.substring(payload.indexOf('?'));
     }
     let parser = /([^=?#&]+)=?([^&]*)/g;
-    let result:any = {}
-    let part:any;
+    let result: any = {};
+    let part: any;
 
     // eslint-disable-next-line no-cond-assign
-    while (part = parser.exec(payload)) {
-      let key = this.decodeURI(part[1])
-        , value = this.decodeURI(part[2]);
+    while ((part = parser.exec(payload))) {
+      let key = this.decodeURI(part[1]),
+        value = this.decodeURI(part[2]);
 
       //
       // Prevent overriding of existing properties. This ensures that build-in
@@ -95,7 +129,9 @@ export const convert = {
       // In the case if failed decoding, we want to omit the key/value pairs
       // from the result.
       //
-      if (key === null || value === null || key in result) {continue;}
+      if (key === null || value === null || key in result) {
+        continue;
+      }
       result[key] = value;
     }
 

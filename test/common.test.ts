@@ -1,4 +1,5 @@
 import {describe, expect, test} from '@jest/globals';
+import { random } from '../src';
 test('common', () => {
-  expect('Hello Lia').toMatch('Lia');
+  expect(random.hash()).toBeDefined()
 });
