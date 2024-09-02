@@ -44,7 +44,7 @@ export const random = {
   },
   hash: (option?: {
     engine?: 'pbkdf2' | 'sha1' | 'sha3' | 'sha256';
-    enc?: 'base64' | 'hash';
+    enc?: 'base64' | 'hex';
     length?: 128 | 256 | 512;
   }): string => {
     let { enc, engine, length } = option ?? {};
